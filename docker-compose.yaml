@@ -1,0 +1,16 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: web-film:latest
+    container_name: netphim
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3001
+      WEB_FILM_ACCESS_KEY: "thanhvu"
+      NEXT_TELEMETRY_DISABLED: "1"
+    restart: unless-stopped
