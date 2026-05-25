@@ -92,12 +92,12 @@ export function FilmDetailTabs({
           )}
 
           <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-black/20 p-3 sm:grid-cols-5 md:grid-cols-7 xl:grid-cols-10">
-            {filteredEpisodes.map((episode) => {
+            {filteredEpisodes.map((episode, index) => {
               const isActive = episode.slug === selectedEpisodeSlug;
 
               return (
                 <Link
-                  key={episode.slug}
+                  key={`${episode.serverName}-${episode.slug}-${index}`}
                   href={`/xem/${filmSlug}?ep=${episode.slug}`}
                   className={`flex h-10 items-center justify-center rounded-md px-2 text-center text-sm font-bold transition ${
                     isActive

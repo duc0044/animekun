@@ -73,7 +73,7 @@ export async function FilmBrowsePage({
   return (
     <main className="min-h-screen bg-black text-white">
       <SiteHeader keyword={keyword} />
-      <SourceBadge />
+      {/* <SourceBadge /> */}
 
       {showHero && hero ? (
         <section className="relative min-h-[520px] overflow-hidden pt-20 md:min-h-[680px] md:pt-24">
