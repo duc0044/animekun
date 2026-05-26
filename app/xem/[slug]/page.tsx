@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FilmPlayer } from "../../components/film-player";
 import { SiteHeader } from "../../components/site-header";
+import { SourceBadge } from "../../components/source-badge";
 import { WatchHistoryRecorder } from "../../components/watch-history-recorder";
 import { createSeoMetadata } from "../../lib/seo";
 import { getFilm } from "../../lib/services/film-service";
@@ -13,17 +14,6 @@ import { formatEpisodeName, uniqueServerNames } from "../../lib/episode-utils";
 
 export const dynamic = "force-dynamic";
 
-async function SourceBadge() {
-  const store = await cookies();
-  const source = store.get("web-film-source")?.value || "ophim";
-  const labels: Record<string, string> = { ophim: "OPhim", nguonc: "NguonC", kkphim: "KKPhim" };
-
-  return (
-    <div className="fixed bottom-4 left-4 z-50 rounded-md bg-zinc-900/80 px-3 py-1.5 text-xs font-bold text-zinc-400 ring-1 ring-white/10 backdrop-blur">
-      Nguồn: <span className="text-red-400">{labels[source] || source}</span>
-    </div>
-  );
-}
 
 const getSearchValue = (
   value: string | string[] | undefined,

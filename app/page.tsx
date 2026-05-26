@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -21,6 +21,7 @@ import { HeroSlider } from "./components/hero-slider";
 import { HomeClientFallback } from "./components/home-client-fallback";
 import { ScheduleSection } from "./components/schedule-section";
 import { SiteHeader } from "./components/site-header";
+import { SourceBadge } from "./components/source-badge";
 import { getFilm, getFilms } from "./lib/services/film-service";
 import type { Film } from "./lib/types/film";
 import { cookies } from "next/headers";
@@ -399,17 +400,6 @@ function TopTenSection({ films }: { films: Film[] }) {
   );
 }
 
-async function SourceBadge() {
-  const store = await cookies();
-  const source = store.get("web-film-source")?.value || "ophim";
-  const labels: Record<string, string> = { ophim: "OPhim", nguonc: "NguonC", kkphim: "KKPhim" };
-
-  return (
-    <div className="fixed bottom-4 left-4 z-50 rounded-md bg-zinc-900/80 px-3 py-1.5 text-xs font-bold text-zinc-400 ring-1 ring-white/10 backdrop-blur">
-      Nguồn: <span className="text-red-400">{labels[source] || source}</span>
-    </div>
-  );
-}
 
 export default async function Home() {
   const [latest, ...sectionResults] = await Promise.all([

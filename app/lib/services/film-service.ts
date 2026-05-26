@@ -177,62 +177,7 @@ async function getFilmBySource(
 }
 
 async function getPlayableFilms(candidates: Film[], limit: number): Promise<Film[]> {
-  const playableFilms: Film[] = [];
-  const fallbackFilms: Film[] = [];
-
-  for (let index = 0; index < candidates.length && playableFilms.length < limit; index += DETAIL_CHECK_BATCH_SIZE) {
-    const batch = candidates.slice(index, index + DETAIL_CHECK_BATCH_SIZE);
-    const details = await Promise.all(batch.map((film) => getFilm(film.slug)));
-
-    for (const [detailIndex, detail] of details.entries()) {
-      const fallbackFilm = batch[detailIndex];
-
-      if (hasPlayableEpisode(detail)) {
-        playableFilms.push(detail);
-      } else if (fallbackFilm) {
-        fallbackFilms.push(fallbackFilm);
-      }
-
-      if (playableFilms.length >= limit) {
-        break;
-      }
-    }
-  }
-
-  if (playableFilms.length >= limit) {
-    return playableFilms.slice(0, limit);
-  }
-
-  const usedSlugs = new Set(playableFilms.map((film) => film.slug));
-  const mergedFilms = [...playableFilms];
-
-  for (const film of fallbackFilms) {
-    if (!film.slug || usedSlugs.has(film.slug)) {
-      continue;
-    }
-
-    mergedFilms.push(film);
-    usedSlugs.add(film.slug);
-
-    if (mergedFilms.length >= limit) {
-      return mergedFilms;
-    }
-  }
-
-  for (const film of candidates) {
-    if (!film.slug || usedSlugs.has(film.slug)) {
-      continue;
-    }
-
-    mergedFilms.push(film);
-    usedSlugs.add(film.slug);
-
-    if (mergedFilms.length >= limit) {
-      break;
-    }
-  }
-
-  return mergedFilms;
+  return candidates.slice(0, limit);
 }
 
 export async function getFilms({
