@@ -1,10 +1,11 @@
-import { Heart, Play, Plus, Share2, Star } from "lucide-react";
+import { Play, Share2, Star } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FilmDetailTabs } from "../../components/film-detail-tabs";
 import { SiteHeader } from "../../components/site-header";
+import { BookmarkButton } from "../../components/bookmark-button";
 import { createSeoMetadata } from "../../lib/seo";
 import { getFilm } from "../../lib/services/film-service";
 import { cookies } from "next/headers";
@@ -95,7 +96,7 @@ export default async function FilmPage({
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(16,16,19,.75)_0%,rgba(16,16,19,.16)_42%,rgba(16,16,19,.72)_100%)]" />
         </div>
 
-        <div className="relative mx-auto max-w-[104rem] px-4 pb-14 pt-28 sm:px-6 sm:pt-72 lg:px-8 lg:pt-80">
+        <div className="relative mx-auto max-w-[104rem] px-4 pb-20 pt-28 sm:px-6 sm:pt-72 lg:px-8 lg:pt-80">
           <div className="grid gap-5 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start">
             <aside className="p-0 text-center lg:rounded-xl lg:bg-[#17171b]/95 lg:p-6 lg:text-left lg:shadow-2xl lg:shadow-black/50 lg:ring-1 lg:ring-white/10 lg:backdrop-blur-md">
               <div className="relative mx-auto aspect-[2/3] w-32 overflow-hidden rounded-lg bg-zinc-900 shadow-2xl shadow-black/60 ring-1 ring-white/10 sm:w-48">
@@ -190,22 +191,21 @@ export default async function FilmPage({
                     Xem Ngay
                   </Link>
 
-                  <div className="grid w-full max-w-[320px] grid-cols-4 items-start gap-3 lg:flex lg:w-auto lg:max-w-none lg:gap-5">
-                    {[
-                      ["Yêu thích", Heart],
-                      ["Thêm vào", Plus],
-                      ["Chia sẻ", Share2],
-                    ].map(([label, Icon]) => (
-                      <button
-                        key={label as string}
-                        type="button"
-                        className="group inline-flex min-w-12 flex-col items-center gap-1 text-xs font-bold text-white transition hover:text-red-400"
-                        aria-label={label as string}
-                      >
-                        <Icon className="h-5 w-5 transition group-hover:scale-110" aria-hidden="true" />
-                        <span>{label as string}</span>
-                      </button>
-                    ))}
+                  <div className="grid w-full max-w-[320px] grid-cols-3 items-start gap-3 lg:flex lg:w-auto lg:max-w-none lg:gap-5">
+                    <BookmarkButton
+                      filmSlug={film.slug}
+                      filmName={film.name}
+                      filmThumbUrl={film.thumbUrl}
+                      filmPosterUrl={film.posterUrl || film.thumbUrl}
+                    />
+                    <button
+                      type="button"
+                      className="group inline-flex min-w-12 flex-col items-center gap-1 text-xs font-bold text-white transition hover:text-red-400"
+                      aria-label="Chia sẻ"
+                    >
+                      <Share2 className="h-5 w-5 transition group-hover:scale-110" aria-hidden="true" />
+                      <span>Chia sẻ</span>
+                    </button>
                     <div className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-red-600 px-3 text-sm font-bold text-white lg:hidden">
                       <Star className="h-5 w-5 fill-white" aria-hidden="true" />
                       {displayRating}

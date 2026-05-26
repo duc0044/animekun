@@ -119,7 +119,7 @@ export default async function WatchPage({
         />
       )}
 
-      <section className="mx-auto max-w-[104rem] px-4 pb-16 pt-24 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-[104rem] px-4 pb-20 pt-24 sm:px-6 lg:px-8">
         <Link
           href={`/phim/${film.slug}`}
           className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-zinc-300 transition hover:text-white"
@@ -230,12 +230,12 @@ export default async function WatchPage({
               )}
 
               <div className="mt-4 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-black/20 p-3 sm:grid-cols-5 md:grid-cols-7 xl:grid-cols-10">
-                {activeEpisodes.map((episode) => {
+                {activeEpisodes.map((episode, index) => {
                   const isActive = episode.slug === resolvedEpisode?.slug;
 
                   return (
                     <Link
-                      key={episode.slug}
+                      key={`${episode.serverName}-${episode.slug}-${index}`}
                       href={`/xem/${film.slug}?ep=${episode.slug}&server=${encodeURIComponent(activeServer)}`}
                       className={`flex h-10 items-center justify-center gap-2 rounded-md px-2 text-center text-sm font-bold transition ${
                         isActive

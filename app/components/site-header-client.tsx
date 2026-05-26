@@ -1,11 +1,13 @@
 "use client";
 
-import { ChevronDown, Clapperboard, Home, Play, Search, Tv } from "lucide-react";
+import { type User } from "@supabase/supabase-js";
+import { Calendar, ChevronDown, Clapperboard, Home, LogOut, Play, Search, Tv, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { navGroups } from "../lib/navigation";
 import { type FilmApiSource } from "../lib/api/provider";
+import { signOut } from "../auth/actions";
 
 const SOURCE_OPTIONS = [
   { label: "OPhim", value: "ophim" },
@@ -18,20 +20,23 @@ type SourceValue = (typeof SOURCE_OPTIONS)[number]["value"];
 export function SiteHeaderClient({
   keyword = "",
   initialSource = "ophim",
+  user,
 }: {
   keyword?: string;
   initialSource?: FilmApiSource;
+  user?: User | null;
 }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeNavGroup, setActiveNavGroup] = useState<string | null>(null);
   const [isSourceOpen, setIsSourceOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [activeSource] = useState<SourceValue>(initialSource as SourceValue);
   const pathname = usePathname();
   const mobileNavItems = [
     { label: "Trang chủ", href: "/", Icon: Home },
     { label: "Hoạt hình", href: "/the-loai/hoat-hinh", Icon: Tv },
     { label: "Hành động", href: "/the-loai/hanh-dong", Icon: Clapperboard },
-    { label: "Lịch chiếu", href: "/lich-chieu", Icon: Tv },
+    { label: "Lịch chiếu", href: "/lich-chieu", Icon: Calendar },
   ];
 
   return (
@@ -152,6 +157,59 @@ export function SiteHeaderClient({
               Tìm
             </button>
           </form>
+
+          <div className="relative hidden md:block">
+            {user ? (
+              <>
+                <button
+                  type="button"
+                  aria-label="Menu người dùng"
+                  aria-expanded={isUserMenuOpen}
+                  onClick={() => {
+                    setIsUserMenuOpen((v) => !v);
+                    setActiveNavGroup(null);
+                    setIsSourceOpen(false);
+                  }}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-zinc-200 transition hover:bg-white/10 hover:text-white"
+                >
+                  <UserIcon className="h-5 w-5" />
+                </button>
+
+                {isUserMenuOpen && (
+                  <>
+                    <button
+                      type="button"
+                      aria-label="Đóng menu"
+                      className="fixed inset-0 z-30 cursor-default"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 top-12 z-40 w-56 overflow-hidden rounded-lg border border-white/10 bg-zinc-950 py-2 text-sm font-medium text-zinc-200 shadow-2xl shadow-black/70">
+                      <div className="border-b border-white/10 px-4 py-3">
+                        <p className="truncate text-xs text-zinc-400">{user.email}</p>
+                      </div>
+                      <form action={signOut}>
+                        <button
+                          type="submit"
+                          className="flex w-full items-center gap-2 px-4 py-3 text-left transition hover:bg-white/10 hover:text-white"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Đăng xuất
+                        </button>
+                      </form>
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 text-sm font-semibold text-zinc-200 transition hover:bg-white/10 hover:text-white"
+              >
+                <UserIcon className="h-4 w-4" />
+                <span className="hidden lg:inline">Đăng nhập</span>
+              </Link>
+            )}
+          </div>
         </div>
       </header>
 

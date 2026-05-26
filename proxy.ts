@@ -1,3 +1,4 @@
+import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 import { ACCESS_COOKIE, hasValidAccess } from "./app/lib/access";
 
@@ -16,17 +17,42 @@ function redirectTo(request: NextRequest, path: string, status = 307) {
   return NextResponse.redirect(new URL(path, getRequestOrigin(request)), status);
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Refresh Supabase auth session
+  let supabaseResponse = NextResponse.next({ request });
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
+          supabaseResponse = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options),
+          );
+        },
+      },
+    },
+  );
+
+  await supabase.auth.getUser();
+
   if (PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
-    return NextResponse.next();
+    return supabaseResponse;
   }
 
   const accessCookie = request.cookies.get(ACCESS_COOKIE)?.value;
 
   if (hasValidAccess(accessCookie)) {
-    return NextResponse.next();
+    return supabaseResponse;
   }
 
   const nextPath = `${pathname}${request.nextUrl.search}`;

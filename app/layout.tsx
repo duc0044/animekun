@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
+import { createClient } from "./lib/supabase/server";
+import { AuthProvider } from "./components/auth-provider";
 import { ScrollToTop } from "./components/scroll-to-top";
 import { SiteFooter } from "./components/site-footer";
 import { createSeoMetadata, siteConfig } from "./lib/seo";
@@ -16,11 +18,16 @@ export const metadata: Metadata = {
   ...createSeoMetadata(),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <html
       lang="vi"
@@ -28,7 +35,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body suppressHydrationWarning className="min-h-full bg-black">
-        {children}
+        <AuthProvider initialUser={user}>{children}</AuthProvider>
         <SiteFooter />
         <ScrollToTop />
       </body>

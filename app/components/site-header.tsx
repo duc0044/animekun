@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { FILM_API_SOURCE_COOKIE, type FilmApiSource } from "../lib/api/provider";
+import { createClient } from "../lib/supabase/server";
 import { SiteHeaderClient } from "./site-header-client";
 
 const SOURCE_OPTIONS: FilmApiSource[] = ["ophim", "nguonc", "kkphim"];
@@ -11,5 +12,10 @@ export async function SiteHeader({ keyword = "" }: { keyword?: string }) {
     ? (source as FilmApiSource)
     : "ophim";
 
-  return <SiteHeaderClient keyword={keyword} initialSource={initialSource} />;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return <SiteHeaderClient keyword={keyword} initialSource={initialSource} user={user} />;
 }
