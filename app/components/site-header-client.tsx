@@ -41,7 +41,7 @@ export function SiteHeaderClient({
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-30 border-b border-white/10 bg-black/80 backdrop-blur">
+      <header className="fixed inset-x-0 top-0 z-[60] border-b border-white/10 bg-black/80 backdrop-blur">
         <div className="mx-auto flex max-w-[96rem] items-center gap-3 px-4 py-3 sm:px-6 md:gap-5 md:py-4 lg:px-6 2xl:px-4">
           <div className="flex min-w-0 flex-1 items-center justify-center gap-5 md:flex-none md:justify-start">
             <Link href="/" className="inline-flex items-center gap-2">
