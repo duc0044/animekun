@@ -8,7 +8,7 @@ export async function createClient() {
 
   if (!url || !anonKey) {
     console.warn("Supabase credentials missing. Using mock client.");
-    return createMockSupabaseClient();
+    return createMockSupabaseClient() as ReturnType<typeof createServerClient>;
   }
 
   const cookieStore = await cookies();
