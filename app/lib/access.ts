@@ -4,7 +4,7 @@ export const ACCESS_COOKIE = "web-film-access";
 export const ACCESS_KEY_ENV = "WEB_FILM_ACCESS_KEY";
 
 export function getAccessKey() {
-  return process.env[ACCESS_KEY_ENV] || "thanhvu";
+  return process.env[ACCESS_KEY_ENV] || "congduc";
 }
 
 export function getAccessToken() {
