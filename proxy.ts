@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 import { ACCESS_COOKIE, hasValidAccess } from "./app/lib/access";
+import { createMockSupabaseClient } from "./app/lib/supabase/mock";
+import { type SupabaseClient } from "@supabase/supabase-js";
 
 const PUBLIC_PATHS = ["/unlock", "/api/unlock"];
 
@@ -22,26 +24,38 @@ export async function proxy(request: NextRequest) {
 
   // Refresh Supabase auth session
   let supabaseResponse = NextResponse.next({ request });
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
+  
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  let supabase: SupabaseClient;
+
+  if (!url || !anonKey) {
+    console.warn("Supabase credentials missing in proxy middleware. Using mock client.");
+    supabase = createMockSupabaseClient() as SupabaseClient;
+  } else {
+
+    supabase = createServerClient(
+      url,
+      anonKey,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) =>
+              request.cookies.set(name, value),
+            );
+            supabaseResponse = NextResponse.next({ request });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options),
+            );
+          },
         },
       },
-    },
-  );
+    );
+  }
+
 
   await supabase.auth.getUser();
 
